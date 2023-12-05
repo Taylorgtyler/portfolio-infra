@@ -11,28 +11,26 @@ terraform {
   }
 }
 provider "google" {
-  credentials = file("<NAME>.json")
 
   project = "protean-torus-407002"
   region  = "us-central1"
   zone    = "us-central1-c"
 }
 
+resource "random_id" "bucket_id" {
+  byte_length = 8
+}
+
 resource "google_storage_bucket" "name" {
     name = "economic-data-${random_id.bucket_id.hex}"
     location = "US"
-    force_destroy = true
+    storage_class = "COLDLINE"
 
     cors {
-    origin          = ["http://example.com"]
+    origin          = ["https://localhost:8080"]
     method          = ["GET", "HEAD", "PUT", "POST", "DELETE"]
     response_header = ["*"]
     max_age_seconds = 3600
   }
   
-}
-
-output "bucket_name" {
-  value = google_storage_bucket.name.name
-  description = "The name of the bucket"
 }
